@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: healthcare_nginx
+    ports:
+      - "4500:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - jupyter
+    networks:
+      - healthcare-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Flask web application service
+  web:
+    build: .
+    expose:
+      - "5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=False
+      - SECRET_KEY=your-secret-key-change-in-production
+      - MONGO_URI=mongodb://mongodb:27017/healthcare_survey
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./exports:/app/exports
+      - ./notebooks:/app/notebooks
+    networks:
+      - healthcare-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # MongoDB database service
+  mongodb:
+    image: mongo:7.0
+    container_name: healthcare_mongodb
+    expose:
+      - "27017"
+    environment:
+      - MONGO_INITDB_DATABASE=healthcare_survey
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - healthcare-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # MongoDB Express (optional web interface for MongoDB)
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: healthcare_mongo_express
+    expose:
+      - "8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    depends_on:
+      - mongodb
+    networks:
+      - healthcare-network
+    restart: unless-stopped
+    profiles:
+      - dev
+
+  # Jupyter notebook service for data analysis
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    expose:
+      - "8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=healthcare-analysis
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./exports:/home/jovyan/work/exports
+      - ./data_processing:/home/jovyan/work/data_processing
+      - ./app:/home/jovyan/work/app
+    depends_on:
+      - mongodb
+    networks:
+      - healthcare-network
+    restart: unless-stopped
+
+# Named volumes for persistent data
+volumes:
+  mongodb_data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  healthcare-network:
+    driver: bridge

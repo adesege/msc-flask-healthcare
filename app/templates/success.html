@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow border-success">
+            <div class="card-header bg-success text-white text-center">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Survey Completed Successfully!
+                </h2>
+            </div>
+            
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-trophy text-warning" style="font-size: 4rem;"></i>
+                </div>
+                
+                <h3 class="text-success mb-3">Thank You for Your Participation!</h3>
+                
+                <p class="lead text-muted mb-4">
+                    Your survey response has been successfully recorded and will help us better understand 
+                    healthcare spending patterns for our upcoming product launch.
+                </p>
+                
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>What happens next?</strong><br>
+                    Your data will be analyzed along with other responses to identify spending trends 
+                    and patterns that will inform our healthcare product development.
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0">
+                            <div class="card-body">
+                                <i class="fas fa-shield-alt text-primary mb-2" style="font-size: 2rem;"></i>
+                                <h5>Secure</h5>
+                                <p class="small text-muted">Your data is encrypted and stored securely</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0">
+                            <div class="card-body">
+                                <i class="fas fa-user-secret text-success mb-2" style="font-size: 2rem;"></i>
+                                <h5>Anonymous</h5>
+                                <p class="small text-muted">No personal identifying information is stored</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0">
+                            <div class="card-body">
+                                <i class="fas fa-chart-line text-info mb-2" style="font-size: 2rem;"></i>
+                                <h5>Research</h5>
+                                <p class="small text-muted">Used only for legitimate research purposes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{{ url_for('main.survey') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus me-2"></i>Submit Another Response
+                    </a>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Information Card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Research Impact
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    Your contribution to this healthcare spending survey will help us:
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Identify key spending patterns across different demographics
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Design healthcare products that meet real financial needs
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Understand the relationship between income and healthcare spending
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Create more accessible and affordable healthcare solutions
+                    </li>
+                </ul>
+                
+                <div class="alert alert-light mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        Survey submitted successfully
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Animated confetti effect -->
+<div id="confetti-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Simple confetti animation effect
+document.addEventListener('DOMContentLoaded', function() {
+    createConfetti();
+});
+
+function createConfetti() {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8'];
+    
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.top = '-10px';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = '50%';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '9999';
+            confetti.style.animation = 'fall 3s linear forwards';
+            
+            container.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 3000);
+        }, i * 100);
+    }
+}
+
+// CSS animation for falling confetti
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fall {
+        0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

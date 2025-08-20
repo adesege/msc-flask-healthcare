@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    Healthcare Spending Survey
+                </h2>
+                <p class="card-text mb-0 mt-2">
+                    Help us understand healthcare spending patterns by sharing your income and expense information.
+                </p>
+            </div>
+            
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.survey') }}" id="surveyForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Personal Information Section -->
+                    <div class="section-header">
+                        <h4 class="text-primary mb-3">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h4>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.age.id }}" class="form-label">
+                                <i class="fas fa-birthday-cake me-1"></i>{{ form.age.label.text }}
+                            </label>
+                            {{ form.age }}
+                            {% if form.age.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.age.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.gender.id }}" class="form-label">
+                                <i class="fas fa-venus-mars me-1"></i>{{ form.gender.label.text }}
+                            </label>
+                            {{ form.gender }}
+                            {% if form.gender.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.gender.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.total_income.id }}" class="form-label">
+                                <i class="fas fa-dollar-sign me-1"></i>{{ form.total_income.label.text }}
+                            </label>
+                            {{ form.total_income }}
+                            {% if form.total_income.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.total_income.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Expense Categories Section -->
+                    <div class="section-header">
+                        <h4 class="text-primary mb-3">
+                            <i class="fas fa-shopping-cart me-2"></i>Monthly Expenses
+                        </h4>
+                        <p class="text-muted mb-4">
+                            Select the categories where you spend money and enter the monthly amounts.
+                        </p>
+                    </div>
+                    
+                    <!-- Utilities -->
+                    <div class="expense-category mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.utilities_check }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.utilities_check.id }}">
+                                        <i class="fas fa-lightbulb me-2 text-warning"></i>{{ form.utilities_check.label.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                {{ form.utilities_amount }}
+                                {% if form.utilities_amount.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.utilities_amount.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Entertainment -->
+                    <div class="expense-category mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.entertainment_check }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.entertainment_check.id }}">
+                                        <i class="fas fa-film me-2 text-info"></i>{{ form.entertainment_check.label.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                {{ form.entertainment_amount }}
+                                {% if form.entertainment_amount.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.entertainment_amount.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- School Fees -->
+                    <div class="expense-category mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.school_fees_check }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.school_fees_check.id }}">
+                                        <i class="fas fa-graduation-cap me-2 text-success"></i>{{ form.school_fees_check.label.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                {{ form.school_fees_amount }}
+                                {% if form.school_fees_amount.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.school_fees_amount.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shopping -->
+                    <div class="expense-category mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.shopping_check }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.shopping_check.id }}">
+                                        <i class="fas fa-shopping-bag me-2 text-danger"></i>{{ form.shopping_check.label.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                {{ form.shopping_amount }}
+                                {% if form.shopping_amount.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.shopping_amount.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Healthcare -->
+                    <div class="expense-category mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.healthcare_check }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.healthcare_check.id }}">
+                                        <i class="fas fa-heartbeat me-2 text-primary"></i>{{ form.healthcare_check.label.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                {{ form.healthcare_amount }}
+                                {% if form.healthcare_amount.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.healthcare_amount.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Submit Section -->
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Privacy Notice:</strong> Your data will be used solely for research purposes and will be kept confidential.
+                            </div>
+                        </div>
+                        {{ form.submit }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Summary Card -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8 col-md-10">
+        <div class="card" id="summaryCard" style="display: none;">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-calculator me-2"></i>Expense Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total Monthly Income:</strong> $<span id="summaryIncome">0.00</span></p>
+                        <p><strong>Total Monthly Expenses:</strong> $<span id="summaryExpenses">0.00</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Remaining Balance:</strong> $<span id="summaryBalance">0.00</span></p>
+                        <p><strong>Expense Ratio:</strong> <span id="summaryRatio">0%</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Real-time expense calculation and summary
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('surveyForm');
+    const summaryCard = document.getElementById('summaryCard');
+    const incomeField = document.getElementById('total_income');
+    
+    // Function to update summary
+    function updateSummary() {
+        const income = parseFloat(incomeField.value) || 0;
+        let totalExpenses = 0;
+        
+        // Calculate total expenses
+        const expenseFields = [
+            'utilities_amount', 'entertainment_amount', 'school_fees_amount', 
+            'shopping_amount', 'healthcare_amount'
+        ];
+        
+        expenseFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            const checkbox = document.getElementById(fieldId.replace('_amount', '_check'));
+            
+            if (field && checkbox && checkbox.checked && !field.disabled) {
+                totalExpenses += parseFloat(field.value) || 0;
+            }
+        });
+        
+        // Update summary display
+        if (income > 0 || totalExpenses > 0) {
+            document.getElementById('summaryIncome').textContent = income.toFixed(2);
+            document.getElementById('summaryExpenses').textContent = totalExpenses.toFixed(2);
+            document.getElementById('summaryBalance').textContent = (income - totalExpenses).toFixed(2);
+            
+            const ratio = income > 0 ? ((totalExpenses / income) * 100).toFixed(1) : 0;
+            document.getElementById('summaryRatio').textContent = ratio + '%';
+            
+            summaryCard.style.display = 'block';
+        } else {
+            summaryCard.style.display = 'none';
+        }
+    }
+    
+    // Add event listeners for real-time updates
+    incomeField.addEventListener('input', updateSummary);
+    
+    const allExpenseFields = document.querySelectorAll('.expense-amount');
+    allExpenseFields.forEach(field => {
+        field.addEventListener('input', updateSummary);
+    });
+    
+    const allCheckboxes = document.querySelectorAll('.form-check-input');
+    allCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSummary);
+    });
+});
+</script>
+{% endblock %}

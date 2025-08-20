@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-md-12">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="fas fa-heartbeat me-3"></i>Healthcare Survey Portal
+            </h1>
+            <p class="lead text-muted">
+                Welcome to our healthcare spending research platform. Choose an option below to get started.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-lg border-0 nav-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper mb-4">
+                            <i class="fas fa-clipboard-list fa-4x text-primary"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Take Survey</h3>
+                        <p class="card-text text-muted mb-4">
+                            Share your healthcare spending information to help with our research.
+                        </p>
+                        <a href="{{ url_for('main.survey') }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Start Survey
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-lg border-0 nav-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper mb-4">
+                            <i class="fas fa-chart-bar fa-4x text-info"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Admin Dashboard</h3>
+                        <p class="card-text text-muted mb-4">
+                            View statistics and insights from collected survey responses.
+                        </p>
+                        <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-info btn-lg w-100">
+                            <i class="fas fa-analytics me-2"></i>View Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-lg border-0 nav-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper mb-4">
+                            <i class="fas fa-code fa-4x text-warning"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3">Jupyter Notebooks</h3>
+                        <p class="card-text text-muted mb-4">
+                            Access interactive Jupyter notebooks for advanced data analysis and visualization.
+                        </p>
+                        <a href="/jupyter" class="btn btn-warning btn-lg w-100">
+                            <i class="fas fa-external-link-alt me-2"></i>Open Jupyter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>About This Survey
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-primary">Purpose</h5>
+                                <p class="text-muted">
+                                    This survey collects data on healthcare spending patterns to support research
+                                    into healthcare accessibility and financial planning.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-primary">Privacy</h5>
+                                <p class="text-muted">
+                                    All data is anonymized and used solely for research purposes.
+                                    Your information is kept confidential and secure.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardResults" class="row mt-4" style="display: none;">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Dashboard Statistics
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="dashboardContent">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading dashboard data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadDashboard() {
+        const dashboardResults = document.getElementById('dashboardResults');
+        const dashboardContent = document.getElementById('dashboardContent');
+
+        dashboardResults.style.display = 'block';
+        dashboardContent.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading dashboard data...</p>
+        </div>
+    `;
+
+        try {
+            const response = await fetch('/admin/dashboard');
+            const data = await response.json();
+
+            if (data.success) {
+                const stats = data.statistics;
+                dashboardContent.innerHTML = `
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h2 class="display-6">${stats.total_responses}</h2>
+                                <p class="mb-0">Total Responses</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h2 class="display-6">${stats.avg_age}</h2>
+                                <p class="mb-0">Average Age</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h2 class="display-6">$${stats.avg_income}</h2>
+                                <p class="mb-0">Average Income</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-dark">
+                            <div class="card-body text-center">
+                                <h2 class="display-6">${Object.keys(stats.gender_distribution).length}</h2>
+                                <p class="mb-0">Gender Groups</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Gender Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                ${Object.entries(stats.gender_distribution).map(([gender, count]) => `
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-capitalize">${gender}</span>
+                                        <span class="badge bg-primary">${count}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Total Expenses by Category</h5>
+                            </div>
+                            <div class="card-body">
+                                ${Object.entries(stats.expense_totals).map(([category, total]) => `
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-capitalize">${category.replace('_', ' ')}</span>
+                                        <span class="badge bg-success">$${total}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            } else {
+                dashboardContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error loading dashboard data: ${data.error}
+                </div>
+            `;
+            }
+        } catch (error) {
+            dashboardContent.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error connecting to server. Please try again later.
+            </div>
+        `;
+        }
+    }
+</script>
+{% endblock %}

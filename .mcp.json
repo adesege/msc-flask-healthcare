@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
+    },
+    "cloudflare-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://docs.mcp.cloudflare.com/sse"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "chargebee-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@chargebee/mcp@latest"
+      ]
+    },
+    "chargebee-node-sdk-Docs": {
+      "type": "http",
+      "url": "https://gitmcp.io/chargebee/chargebee-node"
+    },
+    "shadcn": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "shadcn@canary",
+        "registry:mcp"
+      ],
+      "env": {
+        "REGISTRY_URL": "https://alpine-registry.vercel.app//r/registry.json"
+      }
+    }
+  }
+}

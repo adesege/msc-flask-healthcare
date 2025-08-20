@@ -1,0 +1,33 @@
+# Dockerfile for Jupyter notebook service
+FROM jupyter/scipy-notebook:latest
+
+# Switch to root to install additional packages
+USER root
+
+# Install additional system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch back to jovyan user
+USER $NB_UID
+
+# Install additional Python packages for data analysis
+RUN pip install --no-cache-dir \
+    pymongo \
+    flask \
+    seaborn \
+    plotly \
+    python-dotenv \
+    flask-wtf \
+    wtforms
+
+# Copy our application code for analysis
+COPY --chown=$NB_UID:$NB_GID requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Set working directory
+WORKDIR /home/jovyan/work
+
+# Start Jupyter Lab with base URL for nginx routing
+CMD ["start-notebook.sh", "--ServerApp.token='healthcare-analysis'", "--ServerApp.password=''", "--ServerApp.base_url='/jupyter'", "--ServerApp.allow_origin='*'", "--ServerApp.allow_remote_access=True", "--ServerApp.disable_check_xsrf=True"]
